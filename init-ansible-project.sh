@@ -15,7 +15,14 @@ if test -e "$PROJECTPATH"; then
     exit 2
 fi
 
-    
+
+get_abs_path() {
+  echo "$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"
+}
+
+SCRIPT_ABS_PATH=$(get_abs_path $0)
+
+
 mkdir -vp $PROJECTPATH
 pushd $PROJECTPATH >/dev/null
 
@@ -24,8 +31,9 @@ for d in playbooks {group,host}_vars roles; do
 done
 
 
+
 function write_out() {
-    sed -rn -e '/^={20}[[:space:]]*'"$1"'/,/={20}/p' $0 |
+    sed -rn -e '/^={20}[[:space:]]*'"$1"'/,/={20}/p' $SCRIPT_ABS_PATH |
     sed -r -e 1d -e '$d' \
 	>$1
 
