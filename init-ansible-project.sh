@@ -3,7 +3,8 @@
 PROGNAME=$(basename $0)
 LANG=
 
-PROJECTPATH=$1
+# Prompt the user for the project path
+read -p "Please enter the project path: " PROJECTPATH
 
 if test -z "$PROJECTPATH"; then
     echo "Usage: $PROGNAME <PROJECTPATH>" 1>&2
@@ -15,13 +16,11 @@ if test -e "$PROJECTPATH"; then
     exit 2
 fi
 
-
 get_abs_path() {
   echo "$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"
 }
 
 SCRIPT_ABS_PATH=$(get_abs_path $0)
-
 
 mkdir -vp $PROJECTPATH
 pushd $PROJECTPATH >/dev/null
@@ -30,23 +29,19 @@ for d in playbooks {group,host}_vars roles; do
     mkdir -v $d
 done
 
-
-
 function write_out() {
     sed -rn -e '/^={20}[[:space:]]*'"$1"'/,/={20}/p' $SCRIPT_ABS_PATH |
     sed -r -e 1d -e '$d' \
-	>$1
+    >$1
 
     echo "$PROGNAME: created '$1'"
 }
-
 
 for f in ansible.cfg .envrc inventory; do
     write_out $f
 done
 
 exit 0
-
 
 ==================== ansible.cfg ====================
 [defaults]
